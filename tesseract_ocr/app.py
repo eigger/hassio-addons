@@ -7,15 +7,17 @@ app = Flask(__name__)
 
 @app.route("/ocr", methods=["POST"])
 def process_ocr():
-    data = {"success": False}
+    data = {"success": False, "error": ""}
 
     if 'image' not in request.files:
         data['error'] = '이미지 파일이 제공되지 않았습니다.'
+        print("image not found")
         return jsonify(data), 400
 
     image_file = request.files['image']
     if image_file.filename == '':
         data['error'] = '파일이 선택되지 않았습니다.'
+        print("image is empty")
         return jsonify(data), 400
 
     # ROI 및 회전 각도 값 받기
@@ -27,6 +29,7 @@ def process_ocr():
             roi = tuple(map(int, roi.split(',')))
         except ValueError:
             data['error'] = 'ROI 형식이 잘못되었습니다. "x,y,width,height" 형식이어야 합니다.'
+            print("ROI error")
             return jsonify(data), 400
 
     try:
@@ -46,9 +49,11 @@ def process_ocr():
         data['success'] = True
     except IOError:
         data['error'] = '이미지 파일 처리 중 오류가 발생했습니다.'
+        print("OCR IOError")
         return jsonify(data), 500
     except Exception as e:
         data['error'] = str(e)
+        print(str(e))
         return jsonify(data), 500
 
     return jsonify(data)
