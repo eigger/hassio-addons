@@ -1,4 +1,5 @@
 # hassio-addons : Tesseract OCR
+```
 sensor:
   - platform: rest
     name: "OCR Text Extraction"
@@ -10,3 +11,4 @@ sensor:
       Content-Type: application/json
     value_template: "{{ value_json.text }}"
     scan_interval: 3600  # 센서가 매 시간마다 API를 호출
+```
