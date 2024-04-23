@@ -1,4 +1,5 @@
-FROM ubuntu:18.04
+FROM python:3
+
 RUN apt-get update \
     && apt-get install tesseract-ocr -y \
     python3 \
