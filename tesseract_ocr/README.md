@@ -2,13 +2,23 @@
 ```
 sensor:
   - platform: rest
-    name: "OCR Text Extraction"
-    resource: "http://localhost:5080/ocr"
+    name: OCR Text Extraction
+    resource: http://<your_flask_server_ip>:5080/ocr
     method: POST
-    content_type: "multipart/form-data"
-    payload: 'image=@/config/www/images/test.jpg;type=image/jpeg; roi=100,100,300,200; rotate=90'
     headers:
       Content-Type: application/json
-    value_template: "{{ value_json.text }}"
+    payload: >-
+      {
+        "image_url": "http://url_to_your_image.jpg",
+        "roi": "x,y,width,height",
+        "rotate": "90"
+      }
+    value_template: >
+      {% if value_json.success %}
+        {{ value_json.text | replace('\n', ' ') }}
+      {% else %}
+        Error: {{ value_json.error }}
+      {% endif %}
     scan_interval: 3600  # 센서가 매 시간마다 API를 호출
+
 ```
