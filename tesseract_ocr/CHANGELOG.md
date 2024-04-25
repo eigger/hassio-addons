@@ -1,3 +1,3 @@
-## 1.1.7
+## 1.1.8
 
-- Fix save overlay image
+- Add morphology
