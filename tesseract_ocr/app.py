@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import pytesseract
 import io
+import os
 import requests
 import cv2
 import numpy as np
@@ -62,9 +63,27 @@ def process_ocr():
         # 다시 PIL 이미지로 변환
         pil_image = Image.fromarray(binary_image)
 
-        # Tesseract OCR 실행
-        text = pytesseract.image_to_string(pil_image)
-        data['text'] = text
+        # Tesseract를 사용하여 이미지에서 텍스트의 위치와 함께 정보 추출
+        ocr_data = pytesseract.image_to_data(pil_image, output_type=pytesseract.Output.DICT)
+
+        # 인식된 텍스트의 bounding box를 원본 이미지에 그리기
+        extracted_text = []  # 인식된 텍스트를 저장할 리스트
+        n_boxes = len(ocr_data['text'])
+        for i in range(n_boxes):
+            if int(ocr_data['conf'][i]) > 60:  # Confidence level을 기준으로 필터링
+                (x, y, w, h) = (ocr_data['left'][i], ocr_data['top'][i], ocr_data['width'][i], ocr_data['height'][i])
+                cv2.rectangle(open_cv_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(open_cv_image, ocr_data['text'][i], (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                extracted_text.append(ocr_data['text'][i])
+
+        # OCR 결과를 포함한 이미지 저장
+        save_dir = '/config/tesseract_ocr/result'
+        file_name = 'overlay_image.jpg'
+        save_path = os.path.join(save_dir, file_name)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        cv2.imwrite(save_path, open_cv_image)
+        data['text'] = "\n".join(extracted_text)
         data['success'] = True
     except requests.RequestException as e:
         data['error'] = f'이미지 다운로드 실패: {str(e)}'
