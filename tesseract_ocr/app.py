@@ -30,8 +30,8 @@ def process_ocr():
         current_datetime = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         ocr.save_images(open_cv_image, 'overlay_image.jpg')
         ocr.save_images(binary_image, 'binary_image.jpg')
-        ocr.save_images(open_cv_image, f'overlay_image_{current_datetime}.jpg')
-        ocr.save_images(binary_image, f'binary_image_{current_datetime}.jpg')
+        # ocr.save_images(open_cv_image, f'overlay_image_{current_datetime}.jpg')
+        # ocr.save_images(binary_image, f'binary_image_{current_datetime}.jpg')
 
         data['text'] = "\n".join(extracted_text)
         data['success'] = True
