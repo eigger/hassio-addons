@@ -22,12 +22,24 @@ def process_image(image_bytes, rotate=0, roi=None):
     gray_image = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2GRAY)
     resized_gray = cv2.resize(gray_image, None, fx=1, fy=1, interpolation=cv2.INTER_LANCZOS4)
     binary_image = cv2.adaptiveThreshold(resized_gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+
+    # 잡음제거
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel, iterations=3)
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel, iterations=3)
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel, iterations=1)
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel, iterations=1)
+
+    # 블러 처리
+    binary_image = cv2.GaussianBlur(binary_image, (5, 5), 0)
+    binary_image = cv2.medianBlur(binary_image, 3)
+
+    # 윤곽선 강조
+    edges = cv2.Canny(binary_image, 30, 70)
+    binary_image = cv2.bitwise_not(binary_image)
+    binary_image = cv2.bitwise_or(binary_image, edges)
+    binary_image = cv2.bitwise_not(binary_image)
 
     return open_cv_image, binary_image
 
