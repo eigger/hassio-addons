@@ -1,0 +1,22 @@
+{
+  "name": "T9 Plus Mini PC LED Control",
+  "version": "1.0.0",
+  "slug": "t9_plus_ledcontrol",
+  "description": "T9 Plus Mini PC LED Control for Homeassistant",
+  "url": "https://github.com/eigger/hassio-addons/tree/master/t9_plus_ledcontrol",
+  "map": ["config:rw"],
+  "arch": [
+    "armhf",
+    "armv7",
+    "aarch64",
+    "amd64",
+    "i386"
+  ],
+  "startup": "application",
+  "boot": "auto",
+  "options": {},
+  "schema": {},
+  "ports": {
+    "5090/tcp": 5090
+  }
+}
